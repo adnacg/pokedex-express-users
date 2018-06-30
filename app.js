@@ -85,7 +85,8 @@ app.get('/', (request, response) => {
           if (err) {
               console.error('query error:', err.stack);
           } else {
-              let pokeinfo = result.rows.map( pokemon => { return { "name": pokemon.name, "id": pokemon.id, "num": pokemon.num, "img": pokemon.img }; })
+              console.log(result.rows);
+              let pokeinfo = result.rows.map( pokemon => { return { "name": pokemon.name, "id": pokemon.pokemon_id, "num": pokemon.num, "img": pokemon.img }; })
               let context = { pokeinfo: pokeinfo, cookies: request.cookies };
               response.render('home', context);
           }

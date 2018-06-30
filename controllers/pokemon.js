@@ -33,15 +33,24 @@ module.exports = {
             } else {
                 if (res.rows.length > 0) {
                     const queryString2 = 'UPDATE pokemon SET num = $1 WHERE id = $2';
-                    let currentId = res.rows[0].id;
-                    let currentNum = helpers.generateNum(currentId);
-                    let values2 = [currentNum, currentId];
-                    db.query(queryString2, values2, (err, result) => {
+                    let currentPokeId = res.rows[0].id;
+                    let currentPokeNum = helpers.generateNum(currentPokeId);
+                    let values2 = [currentPokeNum, currentPokeId];
+                    db.query(queryString2, values2, (error, result) => {
                         if (err) {
-                            console.error('query error:', err.stack);
+                            console.error('query error:', error.stack);
                         } else {
-                            request.flash('success', 'Pokemon added successfully!');
-                            response.redirect('/');
+                            let currentUserId = request.cookies.user_id;
+                            const queryString3 = 'INSERT INTO user_pokemon (username_id, pokemon_id) VALUES ($1, $2) RETURNING *';
+                            let values3 = [currentUserId, currentPokeId];
+                            db.query(queryString3, values3, (errr, ress) => {
+                                if (errr) {
+                                    console.error('query error:', errr.stack);
+                                } else {
+                                    request.flash('success', 'Pokemon added successfully!');
+                                    response.redirect('/');
+                                }
+                            })
                         }
                     })
                 } else {
