@@ -47,10 +47,9 @@ app.use(function (req, res, next) {
 });
 app.use(function (req, res, next) {
   console.log(req.originalUrl);
-  if (req.originalUrl === '/' || req.originalUrl === '/signin' || req.cookies.logged_in === 'true') {
+  if (req.originalUrl === '/' || req.originalUrl === '/signin' || req.originalUrl === '/user/new?' || req.originalUrl === '/user' || req.cookies.logged_in === 'true') {
     next();
   } else {
-    req.flash('info', 'Please sign in to continue.');
     res.redirect('/signin');
   }
 });
@@ -72,22 +71,28 @@ app.use('/user', user);
 
 // Root handler
 app.get('/', (request, response) => {
-    let queryString;
-    if (request.query.sortby == "name") {
-        queryString = 'SELECT * FROM pokemon ORDER BY name ASC';
+    let isLoggedIn = request.cookies.logged_in;
+    let currentUserId = request.cookies.user_id;
+    if (isLoggedIn === 'true') {
+      let queryString;
+      let values = [currentUserId];
+      if (request.query.sortby == "name") {
+          queryString = 'SELECT * FROM pokemon INNER JOIN user_pokemon ON pokemon.id = user_pokemon.pokemon_id WHERE username_id = $1 ORDER BY pokemon.name ASC;'
+      } else {
+          queryString = 'SELECT * FROM pokemon INNER JOIN user_pokemon ON pokemon.id = user_pokemon.pokemon_id WHERE username_id = $1 ORDER BY pokemon.id ASC;'
+      }
+      db.query(queryString, values, (err, result) => {
+          if (err) {
+              console.error('query error:', err.stack);
+          } else {
+              let pokeinfo = result.rows.map( pokemon => { return { "name": pokemon.name, "id": pokemon.id, "num": pokemon.num, "img": pokemon.img }; })
+              let context = { pokeinfo: pokeinfo, cookies: request.cookies };
+              response.render('home', context);
+          }
+      });
     } else {
-        queryString = 'SELECT * FROM pokemon ORDER BY id ASC';
+      response.render('homeempty');
     }
-
-    db.query(queryString, (err, result) => {
-        if (err) {
-            console.error('query error:', err.stack);
-        } else {
-            let pokeinfo = result.rows.map( pokemon => { return { "name": pokemon.name, "id": pokemon.id, "num": pokemon.num, "img": pokemon.img }; })
-            let context = { pokeinfo: pokeinfo, cookies: request.cookies };
-            response.render('home', context);
-        }
-    });
 });
 
 app.get('/signin', (request, response) => {

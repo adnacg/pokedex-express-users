@@ -7,7 +7,7 @@ class SignInForm extends React.Component {
             <LayoutContainer>
                 <div className="newFormContainer">
                     <form method="POST" action="/signin">
-                        <h1>Please enter your username and password:</h1>
+                        <h1>Please sign in with your username and password:</h1>
                         <div>
                             <label className="formLabel">Username</label>
                             <input className="formInput" type="text" name="username" />

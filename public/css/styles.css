@@ -6,6 +6,7 @@ body {
 }
 
 h1 {
+    font-size: 25px;
     text-align: center;
 }
 
@@ -23,14 +24,22 @@ h1 {
     display: inline;
 }
 
-.small {
+.small,
+.registerMsg {
     font-size: 10px;
     color: #333;
 }
 
+.userSection {
+    width: 100%;
+}
+
 .sortNameButton,
 .sortIdButton,
-.createPoke {
+.createPoke,
+.signInButton,
+.signOutButton,
+.createUser {
     background-color: #2FA299;
     height: 30px;
     width: 135px;
@@ -40,17 +49,30 @@ h1 {
     margin: 10px;
 }
 
+.signInButton,
+.signOutButton,
+.createUser {
+    height: 30px;
+    width: 60px;
+}
+
 .sortNameButton:hover,
 .sortIdButton:hover,
 .actionButtons:hover,
-.createPoke:hover {
+.createPoke:hover,
+.signInButton:hover,
+.signOutButton:hover,
+.createUser:hover {
     opacity: 0.9;
 }
 
 .sortNameButton:active,
 .sortIdButton:active,
 .actionButtons:active,
-.createPoke:active {
+.createPoke:active,
+.signInButton:active,
+.signOutButton:active,
+.createUser:active {
     color: #000;
     transform: translateY(-2px);
 }
@@ -103,6 +125,15 @@ h1 {
     border: 1px solid #000;
     border-radius: 50%;
     margin: 5px;
+}
+
+.welcomeImg {
+    width: 400px;
+    height: 400px;
+    display: flex;
+    margin: 20px auto 0 auto;
+    background-image: url("pikawelcome.png");
+    background-repeat: no-repeat;
 }
 
 
