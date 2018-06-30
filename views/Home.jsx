@@ -26,6 +26,7 @@ class Home extends React.Component {
         const pokemonDetailsComponentArray = this.props.pokeinfo.map( function(currentPoke) {
             return <PokemonDetails key={currentPoke.id} pokemon={currentPoke} />;
         });
+        const isLoggedIn = this.props.cookies.logged_in === 'true';
 
         return (
             <LayoutContainer messages={this.props.messages}>
@@ -51,23 +52,24 @@ class Home extends React.Component {
                         </div>
                     </form>
 
-                    <form className="sortform" method="GET" action="/user/new">
-                        <div className="buttonDiv">
-                            <input className="createPoke" type="submit" value="Create Account" />
-                        </div>
-                    </form>
-
-                    <form className="sortform" method="GET" action="/signin">
-                        <div className="buttonDiv">
-                            <input className="createPoke" type="submit" value="Sign In" />
-                        </div>
-                    </form>
-
-                    <form className="sortform" method="POST" action="/signout">
-                        <div className="buttonDiv">
-                            <input className="createPoke" type="submit" value="Sign Out" />
-                        </div>
-                    </form>
+                    { isLoggedIn ? (
+                        <form className="sortform" method="POST" action="/signout">
+                            <div className="buttonDiv">
+                                <input className="createPoke" type="submit" value="Sign Out" />
+                            </div>
+                        </form>
+                    )  : (
+                        [<form className="sortform" method="GET" action="/user/new">
+                            <div className="buttonDiv">
+                                <input className="createPoke" type="submit" value="Create Account" />
+                            </div>
+                        </form>,
+                        <form className="sortform" method="GET" action="/signin">
+                            <div className="buttonDiv">
+                                <input className="createPoke" type="submit" value="Sign In" />
+                            </div>
+                        </form>]
+                    )}
 
                 </div>
 

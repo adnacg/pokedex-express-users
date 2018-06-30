@@ -107,7 +107,7 @@ h1 {
 
 
 /* Add & Edit Poke Form */
-.successFlashMessage {
+.successFlashMessage, .errorFlashMessage, .infoFlashMessage {
     width: 100%;
     display: flex;
     justify-content: center;

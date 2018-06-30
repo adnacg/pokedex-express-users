@@ -5,6 +5,7 @@ const path = require('path');
 const jsonfile = require('jsonfile');
 const flash = require('connect-flash');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const sha256 = require('js-sha256');
 
 const db = require("./db");
@@ -38,11 +39,20 @@ app.use(session({
   saveUninitialized: true,
   // cookie: { secure: true }
 }));
+app.use(cookieParser());
 app.use(flash());
 app.use(function (req, res, next) {
   res.locals.messages = req.flash();
-
   next();
+});
+app.use(function (req, res, next) {
+  console.log(req.originalUrl);
+  if (req.originalUrl === '/' || req.originalUrl === '/signin' || req.cookies.logged_in === 'true') {
+    next();
+  } else {
+    req.flash('info', 'Please sign in to continue.');
+    res.redirect('/signin');
+  }
 });
 
 // set react to be the default view engine
@@ -74,8 +84,7 @@ app.get('/', (request, response) => {
             console.error('query error:', err.stack);
         } else {
             let pokeinfo = result.rows.map( pokemon => { return { "name": pokemon.name, "id": pokemon.id, "num": pokemon.num, "img": pokemon.img }; })
-            let context = { pokeinfo };
-            // pokeinfo = pokeinfo.sort(helpers.sortObject);
+            let context = { pokeinfo: pokeinfo, cookies: request.cookies };
             response.render('home', context);
         }
     });
@@ -98,13 +107,13 @@ app.post('/signin', (request, response) => {
       if (res.rows.length < 1) {
         request.flash('error', 'No such account!');
         response.redirect('/');
+        return;
       };
-      console.log('checking password');
       if (enteredPasswordHash !== res.rows[0].password_hash) {
         request.flash('error', 'Please check your password.');
         response.redirect('/');
+        return;
       };
-      console.log('creating cookies');
       response.cookie('logged_in', 'true');
       response.cookie('user_id', res.rows[0].id);
       request.flash('success', 'Successfully signed in!');
@@ -116,6 +125,7 @@ app.post('/signin', (request, response) => {
 app.post('/signout', (request, response) => {
     response.clearCookie('user_id');
     response.clearCookie('logged_in');
+    request.flash('success', 'Successfully signed out!');
     response.redirect('/');
 });
 
