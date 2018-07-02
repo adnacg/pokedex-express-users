@@ -11,10 +11,8 @@ const sha256 = require('js-sha256');
 const db = require("./db");
 const helpers = require("./helpers");
 // load the router module in the app
-const pokemon = require('./routes/pokemon');
-const user = require('./routes/user');
-
-const FILE = 'pokedex.json';
+const pokemon = require('./routes/pokemon')(db);
+const user = require('./routes/user')(db);
 
 /** * ===================================
  * Configurations and set up

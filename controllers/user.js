@@ -1,30 +1,31 @@
-const helpers = require("../helpers");
-const db = require("../db");
-const cookieParser = require('cookie-parser');
-const sha256 = require('js-sha256');
+let createControllers = db => {
+    const User = require("../models/user")(db);
+    const sha256 = require('js-sha256');
 
-module.exports = {
-    showCreationForm: (request, response) => {
-        response.render('newuserform');
-    },
+    return {
+        showCreationForm: (request, response) => {
+            response.render('newuserform');
+        },
 
-    userCreate: (request, response) => {
-        let username = request.body.username;
-        let password = request.body.password;
-        let passwordHash = sha256(password);
-        let queryText = 'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING *';
-        let values = [username, passwordHash];
-        db.query(queryText, values, (err, res) => {
-            if (err) {
+        userCreate: (request, response) => {
+            let userInfo = {
+                username: request.body.username,
+                password: request.body.password,
+                passwordHash: sha256(password)
+            };
+            let errorCallback = (err) => {
                 console.log("Error creating user:", err);
                 response.status(401);
-            } else {
-                let userId = res.rows[0].id;
+            }
+            let successCallback = (createdUserId) => {
                 response.cookie('logged_in', 'true');
-                response.cookie('user_id', userId);
+                response.cookie('user_id', createdUserId);
                 request.flash('success', 'Successfully created account.');
                 response.redirect('/');
             }
-        })
-    },
+            User.create(userInfo, errorCallback, successCallback);
+        }
+    }
 }
+
+module.exports = createControllers;

@@ -131,7 +131,7 @@ h1 {
     width: 400px;
     height: 400px;
     display: flex;
-    margin: 20px auto 0 auto;
+    margin: 30px auto 0px auto;
     background-image: url("pikawelcome.png");
     background-repeat: no-repeat;
 }
